@@ -9,8 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author thanuja
- * <p>
  * A simple server class, listen to a port and serves clients when they connect..
  */
 public class SampleServer {
@@ -75,23 +73,7 @@ public class SampleServer {
 
     }
 
-    /**
-     * Main program...
-     *
-     * @param args
-     * @throws IOException
-     */
-    public static void main(String[] args) throws IOException {
 
-        // Get port from command line argument
-        // int port = Integer.parseInt(args[0]);
-
-        // server is listening on port 5056
-    	// TODO: Move this to Main in Main.java
-        int port = 5056;
-        SampleServer server = new SampleServer(port);
-
-    } // End Main
 } // End Server Class
 
 
@@ -133,7 +115,7 @@ class PlayerSocket extends Thread {
         		// TODO: Move this to it's own class
         		
         		
-	        	// Ask user what he wants 
+	        	// Input stream, input commands
 				dos.writeUTF("Welcome to the server connection. Enter your command"); 
 				
 				// receive the answer from client 
@@ -150,6 +132,7 @@ class PlayerSocket extends Thread {
 		                    dos.writeUTF("usernameDeclined," + username);
 	                    } else {
 		                    dos.writeUTF("setUsername," + username);
+		                    players.add(new Player(username));
 	                    }
 	                    break;
 	                case "drawCard":

@@ -1,5 +1,6 @@
 package com.st20211374.blackjack.server;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -97,8 +98,14 @@ public class Main {
         return cards;
     }
 
-    public static void main(String[] args) {
-    	
+    public static void main(String[] args) throws IOException{
+        List<Player> players = new ArrayList<>();
+        
+    	// TODO: Move this to Main in Main.java
+        int port = 5056;
+        SampleServer server = new SampleServer(port);
+        
+        new ServerSideOutputCommandHandler(server.dis);
     	
         deck = createDeck();
 
@@ -114,7 +121,7 @@ public class Main {
 //        myplayer[1] = new Player("Jhons");
 //        myplayer[2] = new Player("Taume");
 
-        List<Player> players = new ArrayList<>();
+
         players.add(new Player("Franck"));
         players.add(new Player("Jhons"));
         players.add(new Player("Taume"));
