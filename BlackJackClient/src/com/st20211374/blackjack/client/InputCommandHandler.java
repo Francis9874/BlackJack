@@ -4,7 +4,7 @@ import java.io.DataInputStream;
 import java.io.IOException;
 
 public class InputCommandHandler {
-	//input data 
+
 	private DataInputStream input;
 	private Player player;
 	

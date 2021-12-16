@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * @author thanuja
+ * <p>
  * A simple server class, listen to a port and serves clients when they connect..
  */
 public class SampleServer {
@@ -72,91 +74,24 @@ public class SampleServer {
 
 
     }
+    /**
+     * Main program...
+     *
+     * @param args
+     * @throws IOException
+     */
+    public static void main(String[] args) throws IOException {
 
+        // Get port from command line argument
+        // int port = Integer.parseInt(args[0]);
 
+        // server is listening on port 5056
+    	// TODO: Move this to Main in Main.java
+        int port = 5056;
+        SampleServer server = new SampleServer(port);
+
+    } // End Main
 } // End Server Class
 
 
-class PlayerSocket extends Thread {
 
-    final DataInputStream dis; //Declare dis as DataInputStream
-    final DataOutputStream dos; //Declare dos as DataOutputStream
-
-    final Socket s; //Declare s as a Socket
-    String username = null;
-    int score;
-
-    /**
-     * Constructor.
-     *
-     * @param s
-     * @param dis
-     * @param dos
-     */
-    public PlayerSocket(Socket s, DataInputStream dis, DataOutputStream dos) {
-        this.s = s;
-        this.dis = dis;
-        this.dos = dos;
-    }
-
-    @Override
-    /**
-     * run method, called when a client handler thread is starting..
-     * responds to client requests
-     */
-    public void run() {
-        boolean exit = false;
-        String received; 
-        //Declare string to receive information
-
-        //Infinite loop setup
-        while (!exit) {
-        	try {
-        		// TODO: Move this to it's own class
-        		
-        		
-	        	// Input stream, input commands
-				dos.writeUTF("Welcome to the server connection. Enter your command"); 
-				
-				// receive the answer from client 
-				received = dis.readUTF();
-				
-				System.out.println(received);
-				
-	            String[] command = received.split(",");
-	
-	            switch (command[0]) {
-	                case "setUsername":
-	                    username = command[1];
-	                    if (username.contains("dick")) {
-		                    dos.writeUTF("usernameDeclined," + username);
-	                    } else {
-		                    dos.writeUTF("setUsername," + username);
-		                    players.add(new Player(username));
-	                    }
-	                    break;
-	                case "drawCard":
-	//                        CardDraw(player);
-	//                         Send back the card
-	                    break;
-	                case "exit":
-	                    exit = true;
-	                    break;
-	            }
-		    } catch (IOException e) { 
-				e.printStackTrace(); 
-			} 
-	    }
-
-	    try {
-	        // closing resources
-	        this.dis.close();
-	        this.dos.close();
-	
-	    } catch (IOException e) {
-	        e.printStackTrace();
-	    }
-	    
-	    System.out.println("Client disconnected");
-    }
-}

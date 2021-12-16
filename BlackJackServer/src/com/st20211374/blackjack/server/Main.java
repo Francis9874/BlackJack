@@ -1,6 +1,5 @@
 package com.st20211374.blackjack.server;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -13,7 +12,7 @@ import java.util.Scanner;
  * @author Maxim Perolle
  *
  */
-public class Main {
+public class Main extends Thread {
 
 	private static List<Card> deck = new ArrayList<>();
 	
@@ -98,16 +97,12 @@ public class Main {
         return cards;
     }
 
-    public static void main(String[] args) throws IOException{
-        List<Player> players = new ArrayList<>();
-        
-    	// TODO: Move this to Main in Main.java
-        int port = 5056;
-        SampleServer server = new SampleServer(port);
-        
-        new ServerSideOutputCommandHandler(server.dis);
-    	
+    public static void main(String[] args) {
         deck = createDeck();
+        
+        
+    	
+
 
         //TODO Nbr of player expected
         //TODO for each player, take the username
@@ -121,7 +116,7 @@ public class Main {
 //        myplayer[1] = new Player("Jhons");
 //        myplayer[2] = new Player("Taume");
 
-
+        List<Player> players = new ArrayList<>();
         players.add(new Player("Franck"));
         players.add(new Player("Jhons"));
         players.add(new Player("Taume"));
@@ -149,61 +144,6 @@ public class Main {
 
         System.out.println("Dealer has a score of " + dealer.getCardNames());
         System.out.println(result);
-        //initiation of the game
-//        for (int i = 0; i < nbrPlayer; i++) {
-//            for (int x = 0; x < 2; x++) {
-//                //Draw two cards for each player
-//                Card newCard = CardDraw(allCardDrawn);
-//                String cardName = newCard.getCard();
-//                allCardDrawn.add(cardName);
-//                myplayer[i].addCard(cardName);
-//                myplayer[i].addScore(newCard.getScore());
-//            }
-//
-//            System.out.println(myplayer[i].getUsername() + " your cards are: " + myplayer[i].getCardList());
-//        }
-//
-//        //dealer draw, false, draw until score>15, as to have a separate function. If dealerScore>21 every player win
-//        while (dealer.getScore() < 15) {
-//            Card newCard = CardDraw(allCardDrawn);
-//            String cardName = newCard.getCard();
-//            allCardDrawn.add(cardName);
-//            dealer.addCard(cardName);
-//            dealer.addScore(newCard.getScore());
-//        }
-//        System.out.println("The dealer's cards are: " + dealer.getCardList());
-
-
-//        if (dealer.getScore() <= 21) {
-//            //player draw
-//            for (int i = 0; i < nbrPlayer; i++) {
-//                int nbrOfCards = myplayer[i].getCardList().size();
-//                System.out.println("\n" + myplayer[i].getUsername() + " your turn !");
-//                runGame(myplayer[i], allCardDrawn);
-//                //add drawn cards to the list
-//                for (int x = nbrOfCards; x < myplayer[i].getCardList().size(); x++) {
-//                    allCardDrawn.add(myplayer[i].getCard(x));
-//                }
-//
-//            }
-//
-//            //Determination of the winner
-//            String winner = findWinner(myplayer, dealer, nbrPlayer);
-//            switch (winner) {
-//
-//                case "":
-//                    System.out.println("Nobody got a better score than the dealer, everybody lose");
-//                    break;
-//                case "dr@@w":
-//                    System.out.println("More than one person got a better score than the dealer, it's a draw !");
-//                    break;
-//                default:
-//                    System.out.println("Well done " + winner + " you win !");
-//                    break;
-//            }
-//        } else {
-//            System.out.println("The dealer made " + dealer.getScore() + ", everybody wins !");
-//        }
 
     }
 }

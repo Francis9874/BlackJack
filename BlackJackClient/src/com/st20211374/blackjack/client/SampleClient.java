@@ -36,9 +36,9 @@ public class SampleClient extends Thread
 	public void run() {
 		Scanner scn = new Scanner(System.in); 
 
-		// establish the connection with server and output data. Scan everything typed and send it to the server
+		// sent everything wrote by the client console
 		try {
-			
+			System.out.println(socket.getRemoteSocketAddress());
 			dos = new DataOutputStream(socket.getOutputStream()); 
 			
 			while (true) {
