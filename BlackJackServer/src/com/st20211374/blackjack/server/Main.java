@@ -6,15 +6,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
 
-/**
- *
- */
 
 /**
  * @author Maxim Perolle
  *
  */
-public class Main {
+public class Main extends Thread{
 	private ArrayList<Player> player = new ArrayList<>();
 	private static List<Card> deck = new ArrayList<>();
 	
@@ -30,45 +27,50 @@ public class Main {
         player.addCard(card);
     }
 
-    public static Player runGame(Player player,SampleServer server) throws IOException {
+    public static void run(ArrayList<Player> player,ArrayList<SampleServer> servers) throws IOException {
         String decision = "d";
         int bust = 21;
-        String msg = ("Your cards are: " + player.getCardNames() + "(" + player.getScore() + ")");
-        server.dos.writeUTF(msg);
-
-        while (decision.equals("d")) {
-            msg = ("Do you want to hold or to draw a new card ? (type h or d)");
-            server.dos.writeUTF(msg);
-            
-            decision = server.dis.readUTF();
-            server.broadcast(decision, player.getPlayerSocket());
-
-            switch (decision) {
-                case "h":
-                    msg = ("\nOk then: ");
-                    server.dos.writeUTF(msg);
-                    break;
-                case "d":
-                    CardDraw(player);
-                    
-                    msg = ("Your cards are: " + player.getCardNames() + "(" + player.getScore() + ")");
-                    server.dos.writeUTF(msg);
-      
-                    if (player.getScore() > bust) {
-                        msg = ("Your score is over 21, you get busted");
-                        server.dos.writeUTF(msg);
-                        player.setBusted(true);
-                        decision = "h";
-                    }
-                    break;
-                default:
-                    msg = ("Bad entry");
-                    server.dos.writeUTF(msg);
-                    decision = "d";
-                    break;
-            }
+        
+        for (int i = 0; i< player.size(); i++) {
+        	String msg = (player.get(i).getUsername() + " your cards are: " + player.get(i).getCardNames() + "(" + player.get(i).getScore() + ")");
+            servers.get(1).broadcastToAll(msg);
         }
-        return (player);
+        
+        for (int i = 0; i<= player.size(); i++) {
+	        while (decision.equals("d")) {
+	            String msg = (player.get(i).getUsername() + " your turn ! Do you want to hold or to draw a new card ? (type h or d)");
+	            servers.get(i).broadcastToAll(msg);	        
+	                       
+	            decision = servers.get(i).getPlayerSocket().get(1).receiveMessage();//this is awful
+	            System.out.println(decision);
+	            servers.get(i).broadcast(decision, player.get(i).getPlayerSocket());
+	            
+	            switch (decision) {
+	                case "h":
+	                    msg = ("\n You hold, go to the next player: ");
+	                    servers.get(i).dos.writeUTF(msg);
+	                    break;
+	                case "d":
+	                    CardDraw(player.get(i));
+	                    
+	                    msg = ("Your cards are: " + player.get(i).getCardNames() + "(" + player.get(i).getScore() + ")");
+	                    servers.get(i).dos.writeUTF(msg);
+	      
+	                    if (player.get(i).getScore() > bust) {
+	                        msg = ("Your score is over 21, you get busted");
+	                        servers.get(i).dos.writeUTF(msg);
+	                        player.get(i).setBusted(true);
+	                        decision = "h";
+	                    }
+	                    break;
+	                default:
+	                    msg = ("Bad entry");
+	                    servers.get(i).dos.writeUTF(msg);
+	                    decision = "d";
+	                    break;
+	            }
+	        }
+        }
     }
 
     public static String findWinner(List<Player> players, Dealer dealer) {
@@ -112,9 +114,10 @@ public class Main {
         return cards;
     }
 
-    public static void main(ArrayList<Player> players,SampleServer server) throws IOException {
-        deck = createDeck();
-      
+    public static void serveurToGame(ArrayList<Player> players, ArrayList<SampleServer> servers) throws IOException {
+       deck = createDeck();
+       
+       
         //TODO add a loop for a new game
 
 
@@ -135,16 +138,26 @@ public class Main {
 //        Take turns on players
         for (Player player : players) {
             System.out.println("\n" + player.getUsername() + " your turn !");
-				runGame(player,server);
+				run(players,servers);
         }
 
         String result = findWinner(players, dealer);
 
         
         String msg = ("Dealer has a score of " + dealer.getCardNames());
-        server.dos.writeUTF(msg);
-        server.dos.writeUTF(result);
+        servers.get(1).broadcastToAll(msg);
+        servers.get(1).broadcastToAll(result);
 
+    }
+    
+    public static void main(String[] args) {
+        Scanner myObj = new Scanner(System.in);
+        System.out.println("How many players are gonna join the game?");
+        int nbrPlayersWanted = Integer.parseInt(myObj.nextLine());
+        myObj.close();
+        
+        int port = 5056;
+        SampleServer server = new SampleServer(port,nbrPlayersWanted);
     }
 }
 

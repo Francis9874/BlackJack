@@ -15,8 +15,9 @@ import java.util.Set;
  * A simple server class, listen to a port and serves clients when they connect..
  */
 public class SampleServer {
-	private Set<PlayerSocket> playerSocket = new HashSet<>();
+	private ArrayList<PlayerSocket> playerSocket = new ArrayList<>();
 	private ArrayList<Player> players = new ArrayList<>();
+	private ArrayList<SampleServer> servers = new ArrayList<>();
 	private String username;
 	
     int portnumber;
@@ -64,13 +65,18 @@ public class SampleServer {
                     //create a new player to receive the username and socket id, create a main to give the information for the game
                     
                     
+                    //maybe useless
                     PlayerSocket handler = new PlayerSocket(s,this);//declare a new thread t of type ClientHandler
                    
                     Player player = new Player(this.username,handler);
                     this.players.add(player);
+                    this.playerSocket.add(handler);
+                    player.setUsername(dis.readUTF());
+                    this.servers.add(this);
                     
-                    if (nbrPlayersWanted == this.playerSocket.size()) {
-                    	Main.main(this.players,this);
+                    //TODO: try to launch game if there is enough players and if everyone as set his username
+                    if (nbrPlayersWanted == this.players.size()) {
+                    	Main.serveurToGame(players, servers);
                     }
 
                 } // End try part
@@ -88,34 +94,6 @@ public class SampleServer {
 
 
     }
-    /**
-     * Main program...
-     *
-     * @param args
-     * @throws IOException
-     */
-    public static void main(String[] args) throws IOException {
-
-        // Get port from command line argument
-        // int port = Integer.parseInt(args[0]);
-
-        // server is listening on port 5056
-    	// TODO: Move this to Main in Main.java
-        Scanner myObj = new Scanner(System.in);
-        System.out.println("How many players are gonna join the game?");
-        int nbrPlayersWanted = Integer.parseInt(myObj.nextLine());
-        myObj.close();
-        
-        int port = 5056;
-        SampleServer server = new SampleServer(port,nbrPlayersWanted);
-        
-        //TODO: try to launch game if there is enough players and if everyone as set his username
-
-        Main main = new Main();
-        
-        
-
-    } // End Main
     
     void broadcast(String message, PlayerSocket excludeUser) {
         for (PlayerSocket aUser : playerSocket) {
@@ -125,10 +103,21 @@ public class SampleServer {
         }
     }
     
+    void broadcastToAll(String message) {
+        for (PlayerSocket aUser : playerSocket) { {
+                aUser.sendMessage(message);
+            }
+        }
+    }
+    
     
 
     void addUserName(String userName) {
         players.get(players.size()).setUsername(userName);
+    }
+    
+    public ArrayList<PlayerSocket> getPlayerSocket() {
+        return playerSocket;
     }
 } // End Server Class
 

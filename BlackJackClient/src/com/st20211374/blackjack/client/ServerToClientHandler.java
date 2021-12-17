@@ -13,6 +13,7 @@ public class ServerToClientHandler extends Thread {
 	}
 	
 	public void run() {
+		//TODO: make this thing work properly 
 		String received = "";
 		
 		try {
@@ -20,7 +21,7 @@ public class ServerToClientHandler extends Thread {
 				received = input.readUTF();
 	            
 	            if (client.getUserName() != null) {
-                    System.out.print("[" + client.getUserName() + "]: ");
+                    System.out.print(/*"[" + client.getUserName() + "]: " +*/ received + "\n");                 
                 } 
 			}
 			

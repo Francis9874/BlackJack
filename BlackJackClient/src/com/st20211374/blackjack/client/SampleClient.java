@@ -27,14 +27,12 @@ public class SampleClient extends Thread
 
 		try {
 			this.socket = new Socket(this.ipaddress, this.portnumber);
+			new ClientToServerHandler(socket,this).start();
+			new ServerToClientHandler(this).start();
+
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			
-			
-			new ServerToClientHandler(this);
-			new ClientToServerHandler(socket,this);
-
 		}
 	}
 	
@@ -54,5 +52,13 @@ public class SampleClient extends Thread
 			e.printStackTrace();
 			return null;
 		}
+	}
+	
+	public static void main(String[] args) throws IOException { 
+		String ip = "127.0.0.1";
+		int port = 5056;
+		
+		SampleClient client = new SampleClient(ip, port);
+		client.start();
 	}
 }

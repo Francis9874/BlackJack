@@ -76,4 +76,9 @@ public class Player {
     public PlayerSocket getPlayerSocket() {
         return playerSocket;
     }
+    
+    public void setPlayerSocket(PlayerSocket playerSocket) {
+        this.playerSocket = playerSocket;
+    }
+    
 }

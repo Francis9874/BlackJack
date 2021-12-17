@@ -47,6 +47,7 @@ class PlayerSocket extends Thread {
                 server.addUserName(userName);
                 
                 //TODO: make a "enter you username with user=" so that it's possible to use if contains("use") o be sure that it's really the username that had been inputed
+                //TODO: Add when a client connect "2 on 4 clients connected, waiting for the others"
                 String serverMessage = "New user connected: " + userName;
                 server.broadcast(serverMessage, this);
      
@@ -84,6 +85,11 @@ class PlayerSocket extends Thread {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+    }
+    
+    String receiveMessage() throws IOException {
+			String tosend = dis.readUTF();
+			return (tosend); 
     }
     
 }

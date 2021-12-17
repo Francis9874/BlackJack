@@ -24,6 +24,9 @@ public class ClientToServerHandler extends Thread {
 			
 			System.out.println("Hello new Player ! Please enter your username: ");
 			client.setUserName(scn.nextLine());
+			System.out.println("Your username is now set as: " + client.getUserName() +" !");
+			
+			client.dos.writeUTF(client.getUserName());
 			
 			while (true) {
 				String tosend = scn.nextLine(); 
@@ -39,8 +42,8 @@ public class ClientToServerHandler extends Thread {
 			System.out.println("Connection closed"); 
 			socket.close(); 
 			scn.close(); 
-			client.dis.close(); 
 			client.dos.close(); 
+			client.dis.close(); 
 			
 		} catch (UnknownHostException e) {
 			// TODO Auto-generated catch block
