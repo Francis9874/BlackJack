@@ -2,7 +2,6 @@ package com.st20211374.blackjack.server;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 
 public class Player {
@@ -10,12 +9,16 @@ public class Player {
     private String username;
     private ArrayList<Card> cards;
     private boolean busted;
+    private boolean isUsernameSet;
+    private PlayerSocket playerSocket; 
 
     //basic public constructor
-    public Player(String username) {
+    public Player(String username, PlayerSocket playerSocket) {
         this.cards = new ArrayList<>();
         this.username = username;
         this.busted = false;
+        this.isUsernameSet = false;
+        this.playerSocket = playerSocket;
     }
 
     public Player(ArrayList<Card> cards) {
@@ -68,5 +71,9 @@ public class Player {
 
     public boolean isBusted() {
         return busted;
+    }
+    
+    public PlayerSocket getPlayerSocket() {
+        return playerSocket;
     }
 }

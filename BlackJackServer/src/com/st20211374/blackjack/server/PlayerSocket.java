@@ -7,12 +7,14 @@ import java.net.Socket;
 
 class PlayerSocket extends Thread {
 
-    final DataInputStream dis; //Declare dis as DataInputStream
-    final DataOutputStream dos; //Declare dos as DataOutputStream
-
-    final Socket s; //Declare s as a Socket
+    final private DataInputStream dis; //Declare dis as DataInputStream
+    final private DataOutputStream dos; //Declare dos as DataOutputStream
+    final private Socket s; //Declare s as a Socket
+    private SampleServer server;
+    
     String username = null;
     int score;
+    Player player;
 
     /**
      * Constructor.
@@ -21,10 +23,11 @@ class PlayerSocket extends Thread {
      * @param dis
      * @param dos
      */
-    public PlayerSocket(Socket s, DataInputStream dis, DataOutputStream dos) {
+    public PlayerSocket(Socket s, SampleServer server) {
         this.s = s;
-        this.dis = dis;
-        this.dos = dos;
+        this.server = server;
+        this.dis = server.dis;
+        this.dos = server.dos;
     }
 
     @Override
@@ -33,60 +36,54 @@ class PlayerSocket extends Thread {
      * responds to client requests
      */
     public void run() {
-        boolean exit = false;
-        String received; 
-        Player player = new Player("");
+        String received = ""
+        		; 
         //Declare string to receive information
 
         //Infinite loop setup
-        while (!exit) {
-        	try {
-        		// TODO: Move this to it's own class
-        		
-        		
-	        	// Ask user what he wants 
-				dos.writeUTF("Welcome to the server connection. Enter your command"); 
-				
-				// receive the answer from client 
-				received = dis.readUTF();
-				
-				System.out.println(received);
-				
-	            String[] command = received.split(",");
-	
-	            switch (command[0]) {
-	                case "setUsername":
-	                    username = command[1];
-	                    if (username.contains("shit")) {
-		                    dos.writeUTF("usernameDeclined," + username);
-	                    } else {
-		                    dos.writeUTF("setUsername," + username);
-		                    player.setUsername(username);
-		                    System.out.println(player.getUsername());
-	                    }
-	                    break;
-	                case "drawCard":
-	                        Main.CardDraw(player);
-	                        System.out.println(player.getCardNames());
-	                    break;
-	                case "exit":
-	                    exit = true;
-	                    break;
-	            }
+        while (!received.equals("exit")) {
+        	try {       		
+                String userName = dis.readUTF();      
+                server.addUserName(userName);
+                
+                //TODO: make a "enter you username with user=" so that it's possible to use if contains("use") o be sure that it's really the username that had been inputed
+                String serverMessage = "New user connected: " + userName;
+                server.broadcast(serverMessage, this);
+     
+                String clientMessage;
+     
+                do {
+                    clientMessage = dis.readUTF();
+                    serverMessage = "[" + userName + "]: " + clientMessage;
+                    server.broadcast(serverMessage, this);
+                    
+                } while (!clientMessage.equals("exit"));
+                
+	        	
 		    } catch (IOException e) { 
 				e.printStackTrace(); 
 			} 
+        	try {
+     	        // closing resources
+     	        this.dis.close();
+     	        this.dos.close();
+     	
+     	    } catch (IOException e) {
+     	        e.printStackTrace();
+     	    }
+        	System.out.println("Client disconnected");
 	    }
 
-	    try {
-	        // closing resources
-	        this.dis.close();
-	        this.dos.close();
-	
-	    } catch (IOException e) {
-	        e.printStackTrace();
-	    }
-	    
-	    System.out.println("Client disconnected");
+	   
     }
+    
+    void sendMessage(String message) {
+        try {
+			dos.writeUTF(message);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    }
+    
 }

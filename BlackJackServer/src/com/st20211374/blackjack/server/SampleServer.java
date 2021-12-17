@@ -6,30 +6,40 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Scanner;
+import java.util.Set;
 
 /**
- * @author thanuja
- * <p>
+ * 
  * A simple server class, listen to a port and serves clients when they connect..
  */
 public class SampleServer {
-    public static List<PlayerSocket> clients = new ArrayList<>();
+	private Set<PlayerSocket> playerSocket = new HashSet<>();
+	private ArrayList<Player> players = new ArrayList<>();
+	private String username;
+	
     int portnumber;
     ServerSocket server_socket;
 
     // reference variable to store IO streams
     DataInputStream dis;
     DataOutputStream dos;
+    
 
+
+	
+    
     /**
      * Constructor to run the server..
      *
      * @param port
      */
-    public SampleServer(int port) {
+    public SampleServer(int port, int nbrPlayersWanted) {
 
         this.portnumber = port;
+      
+
 
         try {
             this.server_socket = new ServerSocket(port);
@@ -51,13 +61,17 @@ public class SampleServer {
                     dos = new DataOutputStream(s.getOutputStream());
 
                     // create a new thread to handle the connected client
-                    PlayerSocket handler = new PlayerSocket(s, dis, dos);//declare a new thread t of type ClientHandler
-                    Thread t = handler;
-
-                    clients.add(handler);
-
-                    // Invoking the start() method
-                    t.start(); //Start the client handler
+                    //create a new player to receive the username and socket id, create a main to give the information for the game
+                    
+                    
+                    PlayerSocket handler = new PlayerSocket(s,this);//declare a new thread t of type ClientHandler
+                   
+                    Player player = new Player(this.username,handler);
+                    this.players.add(player);
+                    
+                    if (nbrPlayersWanted == this.playerSocket.size()) {
+                    	Main.main(this.players,this);
+                    }
 
                 } // End try part
                 catch (Exception e) {
@@ -87,10 +101,35 @@ public class SampleServer {
 
         // server is listening on port 5056
     	// TODO: Move this to Main in Main.java
+        Scanner myObj = new Scanner(System.in);
+        System.out.println("How many players are gonna join the game?");
+        int nbrPlayersWanted = Integer.parseInt(myObj.nextLine());
+        myObj.close();
+        
         int port = 5056;
-        SampleServer server = new SampleServer(port);
+        SampleServer server = new SampleServer(port,nbrPlayersWanted);
+        
+        //TODO: try to launch game if there is enough players and if everyone as set his username
+
+        Main main = new Main();
+        
+        
 
     } // End Main
+    
+    void broadcast(String message, PlayerSocket excludeUser) {
+        for (PlayerSocket aUser : playerSocket) {
+            if (aUser != excludeUser) {
+                aUser.sendMessage(message);
+            }
+        }
+    }
+    
+    
+
+    void addUserName(String userName) {
+        players.get(players.size()).setUsername(userName);
+    }
 } // End Server Class
 
 

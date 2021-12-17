@@ -9,7 +9,5 @@ public class Main {
 		
 		SampleClient client = new SampleClient(ip, port);
 		client.start();
-
-		new InputCommandHandler(client.getInputStream());
 	}
 }

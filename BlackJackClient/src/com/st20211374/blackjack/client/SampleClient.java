@@ -3,10 +3,8 @@ package com.st20211374.blackjack.client;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-
 import java.net.Socket;
-import java.net.UnknownHostException;
-import java.util.Scanner;
+
 
 public class SampleClient extends Thread
 {	
@@ -20,6 +18,9 @@ public class SampleClient extends Thread
 	DataInputStream 		dis;
 	DataOutputStream 		dos;
 	
+	private String userName;
+	
+	
 	public SampleClient(String ipaddress, int port) {
 		this.ipaddress = ipaddress;
 		this.portnumber = port;
@@ -29,44 +30,22 @@ public class SampleClient extends Thread
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
-	}
-	
-	@Override
-	public void run() {
-		Scanner scn = new Scanner(System.in); 
+			
+			
+			new ServerToClientHandler(this);
+			new ClientToServerHandler(socket,this);
 
-		// sent everything wrote by the client console
-		try {
-			System.out.println(socket.getRemoteSocketAddress());
-			dos = new DataOutputStream(socket.getOutputStream()); 
-			
-			while (true) {
-				String tosend = scn.nextLine(); 
-				dos.writeUTF(tosend);
-				
-				if(tosend.equals("exit")) { 
-					break; 
-				}
-			}
-			
-			// closing resources 
-			System.out.println("Closing this connection : " + socket); 
-			System.out.println("Connection closed"); 
-			socket.close(); 
-			scn.close(); 
-			dis.close(); 
-			dos.close(); 
-			
-		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 	}
 	
+	void setUserName(String userName) {
+        this.userName = userName;
+    }
+ 
+    String getUserName() {
+        return this.userName;
+    }
+    
 	public DataInputStream getInputStream() {
 		try {
 			return new DataInputStream(socket.getInputStream());
